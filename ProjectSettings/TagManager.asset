@@ -7,6 +7,8 @@ TagManager:
   - inimigo
   - item
   - Fase
+  - BarraHp
+  - Fase2
   layers:
   - Default
   - TransparentFX
@@ -16,7 +18,7 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - Ground
   - 
   - 
   - 

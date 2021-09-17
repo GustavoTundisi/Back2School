@@ -1,10 +1,10 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
 using System.IO;
+using UnityEngine.UI;
 
 public class ScriptController: MonoBehaviour
 {
@@ -22,6 +22,7 @@ public class ScriptController: MonoBehaviour
 
     void Start () {
      carregaHistoria();
+
      //M();
    }
     public static void carregaHistoria()

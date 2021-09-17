@@ -11,6 +11,7 @@ public class Inimigo : MonoBehaviour
 
   public float rondaDistancia = 4000;
   private float ronda = 0;
+  
 
 
   void Start()

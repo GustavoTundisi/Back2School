@@ -1,34 +1,55 @@
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
-//Bibliotecas
-public class CameraFollow : MonoBehaviour {
 
-    //offset from the viewport center to fix damping
-    public float m_DampTime = 2f; // Atraso de tempo
-    public Transform m_Target; // Objeto Alvo ou Player
-    public float m_XOffset = 0;  // Referencia do cento em X
-    public float m_YOffset = 2f; // Referencia do cento em Y
+public class camerafollow : MonoBehaviour
+{
+    public GameObject followObject;
+    public Vector2 followOffset;
+    private Vector2 threshold;
+    public float speed = 3f;
+    private Rigidbody2D RB;
 
-	private float margin = 0.1f; // Limite de borda
+    // Start is called before the first frame update
+    void Start()
+    {
+        threshold = CalculateThreshold();
+        RB = followObject.GetComponent <Rigidbody2D>();
+    }
 
-	void Start () { //Caso não inicializar o Transform ele pega o Objeto com TAG Player
-		if (m_Target==null){
-			m_Target = GameObject.FindGameObjectWithTag("Player").transform;
-		}
-	}
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        Vector2 follow = followObject.transform.position;
+        float xDifference = Vector2.Distance(Vector2.right * transform.position.x, Vector2.right * follow.x);
+        float yDifference = Vector2.Distance(Vector2.up * transform.position.y, Vector2.up * follow.y);
 
-    void Update() {
-        if(m_Target) {
-			float targetX = m_Target.position.x + m_XOffset; // Camera recebe posição do player + Offset
-			float targetY = m_Target.position.y + m_YOffset;
-
-			if (Mathf.Abs(transform.position.x - targetX) > margin) // Verifica se o Objeto esta dentro da Margem se não atualiza
-				targetX = Mathf.Lerp(transform.position.x, targetX, 1/m_DampTime * Time.deltaTime);
-
-			if (Mathf.Abs(transform.position.y - targetY) > margin)// Verifica se o Objeto esta dentro da Margem se não atualiza
-				targetY = Mathf.Lerp(transform.position.y, targetY, m_DampTime * Time.deltaTime);
-            
-			transform.position = new Vector3(targetX, targetY, transform.position.z);
+        Vector3 newPosition = transform.position;
+        if(Mathf.Abs(xDifference)>= threshold.x)
+        {
+            newPosition.x = follow.x;     
         }
+        if(Mathf.Abs(yDifference) >= threshold.y)
+        {
+            newPosition.y = follow.y;
+        }
+
+        float moveSpeed = RB.velocity.magnitude > speed ? RB.velocity.magnitude : speed;
+        transform.position = Vector3.MoveTowards(transform.position, newPosition, moveSpeed * Time.deltaTime);
+    }
+
+    private Vector3 CalculateThreshold()
+    {
+        Rect aspect = Camera.main.pixelRect;
+        Vector2 D = new Vector2(Camera.main.orthographicSize * aspect.width / aspect.height, Camera.main.orthographicSize);
+        D.x -= followOffset.x;
+        D.y -= followOffset.y;
+        return D;
+    }
+
+    private void OnDrawGizmos (){
+        Gizmos.color = Color.red;
+        Vector2 border = CalculateThreshold();
+        Gizmos.DrawWireCube (transform.position, new Vector3(border.x * 2, border.y * 2, 1)); 
     }
 }

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,17 +7,15 @@ using UnityEngine.SceneManagement;
 public class ItensPicker : MonoBehaviour { // Nome da Classe
 
     
-
     private int Itens; //Conta o numero de moedas
     public Text scoreText; //Pontuação
-     public Text liveText; // Vida
+    public Text liveText; // Vida
     private int live; // barra de vida
-    public Image healthbar; // Imagem da barra de vida
-
+    private Image healthbar; // Imagem da barra de vida
     public AudioSource ItensSound; // Som de pegar a  Moeda
     public AudioSource lifeSound; // Som da morte
-
     public AudioSource faseSound; // Som da Mudança de fase
+    
     
     
     private void Start()
@@ -27,7 +25,7 @@ public class ItensPicker : MonoBehaviour { // Nome da Classe
         scoreText.text = "";
         liveText.text = "";
         live = ScriptController.userLife;
-        
+      //  healthbar = GameObject.FindGameObjectWithTag("BarraHp").GetComponent<Image>();
       
     }
 
@@ -35,8 +33,9 @@ public class ItensPicker : MonoBehaviour { // Nome da Classe
     {
         scoreText.text = "Itens: "+Itens.ToString();
         liveText.text = "Life: "+live.ToString();
-        UpdateHealthBar();
-       
+
+      //  UpdateHealthBar();
+       //OnTriggerEnter2D();
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -56,7 +55,18 @@ public class ItensPicker : MonoBehaviour { // Nome da Classe
               Destroy(collision.gameObject); //Destroi o fogo
               ScriptController.userLife=live;
               ScriptController.carregaHistoria();
+             // UpdateHealthBar();
+             if(live == 0)
+             {
+             Invoke("ReloadLevel", 0f);
+             ScriptController.carregaHistoria();
+             ScriptController.userLife=live+10;
+             ScriptController.userPoints=Itens-Itens;
+             }
           }
+
+         
+
           if(collision.CompareTag("Fase") == true)
           {
              faseSound.Play();
@@ -66,12 +76,31 @@ public class ItensPicker : MonoBehaviour { // Nome da Classe
              SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1);
               
           }
-    }
-    private void UpdateHealthBar()
-    {
-        healthbar.fillAmount = live/10;
+         else if(collision.CompareTag("Fase2") == true)
+          {
+             faseSound.Play();
+              //SceneManager.LoadScene("fase1");
+              //ScriptController.userPoints=coin;
+              //ScriptController.userLife=life;
+             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex-1);
+              
+          }
     }
     
+     void UpdateHealthBar()
+    {
+        healthbar.fillAmount = live/10;
 
+      //  int BarLife = live * 10;
+     // healthbar.rectTransform.sizeDelta = new Vector2(BarLife, 100);
+
+    }
+    
+  void ReloadLevel()
+  {
+    SceneManager.LoadScene("Fase1");
+
+  
+  }
 
 }
